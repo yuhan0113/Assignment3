@@ -1,23 +1,19 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var habits: [Habit] = [
-        Habit(name: "Habit 1"),
-        Habit(name: "Habit 2"),
-        Habit(name: "Habit 3")
-    ]
+    @StateObject var habitViewModel = HabitViewModel()
 
     var body: some View {
         NavigationView {
             List {
-                ForEach(habits.indices, id: \.self) { index in
+                ForEach(habitViewModel.habits.indices, id: \.self) { index in
                     HStack {
-                        Text(habits[index].name)
+                        Text(habitViewModel.habits[index].name)
                         Spacer()
-                        Image(systemName: habits[index].isCompletedToday ? "checkmark.circle.fill" : "circle")
-                            .foregroundColor(habits[index].isCompletedToday ? .green : .gray)
+                        Image(systemName: habitViewModel.habits[index].isCompletedToday ? "checkmark.circle.fill" : "circle")
+                            .foregroundColor(habitViewModel.habits[index].isCompletedToday ? .green : .gray)
                             .onTapGesture {
-                                habits[index].isCompletedToday.toggle()
+                                habitViewModel.habits[index].isCompletedToday.toggle()
                             }
                     }
                     .padding(.vertical, 5)
