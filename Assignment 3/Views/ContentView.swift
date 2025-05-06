@@ -2,9 +2,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var habits: [Habit] = [
-        Habit(name: "Habit 1", isCompletedToday: false),
-        Habit(name: "Habit 2", isCompletedToday: true),
-        Habit(name: "Habit 3", isCompletedToday: false)
+        Habit(name: "Habit 1"),
+        Habit(name: "Habit 2"),
+        Habit(name: "Habit 3")
     ]
 
     var body: some View {
