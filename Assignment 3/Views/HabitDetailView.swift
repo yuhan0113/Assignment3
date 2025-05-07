@@ -1,18 +1,23 @@
 import SwiftUI
 
 struct HabitDetailView: View {
+    // ==== Properties ====
     @State var habit: Habit
     let onUpdate: (Habit) -> Void
     @State private var isEditing = false
 
+    // ==== Body ====
     var body: some View {
         Form {
+
+            // ==== Habit Editing Mode ====
             if isEditing {
                 TextField("Habit Name", text: $habit.name)
                 Button("Save Changes") {
                     isEditing = false
                     onUpdate(habit)
                 }
+            // ==== Habit Viewing Mode ====
             } else {
                 HStack {
                     Text("Habit:")
@@ -33,6 +38,8 @@ struct HabitDetailView: View {
             }
         }
         .navigationTitle("Habit Details")
+        
+        // ==== ToolBar ====
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(isEditing ? "Cancel" : "Edit") {

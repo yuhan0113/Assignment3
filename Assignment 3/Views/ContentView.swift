@@ -16,11 +16,8 @@ struct ContentView: View {
                 .listStyle(InsetGroupedListStyle())
                 .navigationTitle("Habit Tracker")
                 .toolbar {
-                    // "+" button to add a new habit
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
-                            showingNewHabitView = true
-                        }) {
+                        Button(action: { showingNewHabitView = true }) {
                             Image(systemName: "plus")
                         }
                     }
