@@ -40,16 +40,20 @@ struct CalendarView: View {
                     ForEach(monthDates, id: \.self) { date in
                         let day = Calendar.current.component(.day, from: date)
                         let isToday = Calendar.current.isDate(date, inSameDayAs: Date())
-                        // Simple highlight if any habit was marked today
-                        let didCompleteAny = isToday
-                            ? viewModel.habits.contains(where: { $0.isCompletedToday })
-                            : false
+                        
+                        // true only if *every* habit has a log for this date
+                        let didCompleteAll = viewModel.habits.allSatisfy { habit in
+                            viewModel.logs[habit.id]?
+                                .contains(where: { Calendar.current.isDate($0.date, inSameDayAs: date) })
+                            == true
+                        }
+
 
                         ZStack {
                             Circle()
                                 .frame(width: 32, height: 32)
                                 .foregroundColor(
-                                    didCompleteAny
+                                    didCompleteAll
                                     ? Color.green.opacity(0.3)
                                     : (isToday ? Color.blue.opacity(0.2) : Color.clear)
                                 )
@@ -58,8 +62,15 @@ struct CalendarView: View {
                                 .foregroundColor(
                                     isToday
                                     ? .blue
-                                    : (didCompleteAny ? .green : .primary)
+                                    : (didCompleteAll ? .green : .primary)
                                 )
+                            
+                            if didCompleteAll {
+                                Image(systemName: "checkmark")
+                                    .font(.caption2)
+                                    .foregroundColor(.green)
+                                    .offset(x: 10, y: -10)
+                            }
                         }
                     }
                 }

@@ -6,6 +6,8 @@ class HabitViewModel: ObservableObject {
             saveHabits()
         }
     }
+    
+    @Published var logs: [UUID: [HabitLog]] = [:]
 
     init() {
         loadHabits()
@@ -31,9 +33,24 @@ class HabitViewModel: ObservableObject {
     }
 
     func toggleCompletion(habit: Habit) {
-        if let index = habits.firstIndex(where: { $0.id == habit.id }) {
-            habits[index].isCompletedToday.toggle()
-            habits[index].streak += 1
+        // 1. Find the habit in the array
+        guard let idx = habits.firstIndex(where: { $0.id == habit.id }) else { return }
+        
+        // 2. Flip the "completed today" flag
+        let didNowComplete = !habits[idx].isCompletedToday
+        habits[idx].isCompletedToday = didNowComplete
+        
+        // 3. Record (or remove) a log entry for *today* in the logs dict
+        let today = Calendar.current.startOfDay(for: Date())
+        if didNowComplete {
+            // Add a log if we're now marking it complete
+            let newLog = HabitLog(date: today, value: nil)
+            logs[habit.id, default: []].append(newLog)
+        } else {
+            // Remove any log dated today if we're un-marking it
+            logs[habit.id] = logs[habit.id]?.filter {
+                !Calendar.current.isDate($0.date, inSameDayAs: today)
+            }
         }
     }
 

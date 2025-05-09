@@ -41,10 +41,21 @@ struct ContentView: View {
                         destination: HabitDetailView(
                             habit: habit,
                             onUpdate: { updatedHabit in
-                                if let index = habitViewModel.habits.firstIndex(where: { $0.id == updatedHabit.id }) {
-                                    habitViewModel.habits[index] = updatedHabit
+                                //original habit
+                                guard let idx = habitViewModel.habits.firstIndex(where: { $0.id == updatedHabit.id }) else { return }
+                                let old = habitViewModel.habits[idx]
+
+                                // if completion toggled, record or un-record a log
+                                if updatedHabit.isCompletedToday != old.isCompletedToday {
+                                    habitViewModel.toggleCompletion(habit: old)
+                                }
+
+                                // if name changed, update it
+                                if updatedHabit.name != old.name {
+                                    habitViewModel.habits[idx].name = updatedHabit.name
                                 }
                             }
+
                         )
                     ) {
                         HStack {
