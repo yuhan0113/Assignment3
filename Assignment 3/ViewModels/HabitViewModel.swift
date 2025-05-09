@@ -30,6 +30,7 @@ class HabitViewModel: ObservableObject {
 
     func deleteHabit(at offsets: IndexSet) {
         habits.remove(atOffsets: offsets)
+        let idsToRemove = offsets.map { habits[$0].id }
     }
 
     func toggleCompletion(habit: Habit) {
