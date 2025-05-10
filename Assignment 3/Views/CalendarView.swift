@@ -34,14 +34,14 @@ struct CalendarView: View {
                 }
                 .padding(.horizontal)
 
-                // Days grid
+                // Days
                 let columns = Array(repeating: GridItem(.flexible()), count: 7)
                 LazyVGrid(columns: columns, spacing: 10) {
                     ForEach(monthDates, id: \.self) { date in
                         let day = Calendar.current.component(.day, from: date)
                         let isToday = Calendar.current.isDate(date, inSameDayAs: Date())
                         
-                        // true only if *every* habit has a log for this date
+                        // true only if all added habits has a log for this date
                         let didCompleteAll = viewModel.habits.allSatisfy { habit in
                             viewModel.logs[habit.id]?
                                 .contains(where: { Calendar.current.isDate($0.date, inSameDayAs: date) })
