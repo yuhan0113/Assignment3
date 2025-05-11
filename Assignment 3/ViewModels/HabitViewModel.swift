@@ -15,9 +15,9 @@ class HabitViewModel: ObservableObject {
         // added for testing remove later
         if habits.isEmpty {
             habits = [
-                Habit(name: "Test1", isCompletedToday: true, streak: 1),
+                Habit(name: "Test1", isCompletedToday: false, streak: 1),
                 Habit(name: "Test2", isCompletedToday: false, streak: 2),
-                Habit(name: "Test3", isCompletedToday: true, streak: 3)
+                Habit(name: "Test3", isCompletedToday: false, streak: 3)
             ]
             saveHabits()
         }
@@ -59,11 +59,11 @@ class HabitViewModel: ObservableObject {
         
         let today = Calendar.current.startOfDay(for: Date())
         if didNowComplete {
-            // Add a log if we're now marking it complete
+            // Add a log if they are marking it complete
             let newLog = HabitLog(date: today, value: nil, habitID: habit.id, completed: true)
             logs[habit.id, default: []].append(newLog)
         } else {
-            // Remove any log dated today if we are un-marking it
+            // Remove any log dated today if user are un-marking it
             logs[habit.id] = logs[habit.id]?.filter {
                 !Calendar.current.isDate($0.date, inSameDayAs: today)
             }

@@ -21,19 +21,19 @@ struct HabitRowView: View {
 
             } else {
                 HStack(spacing: 8) {
-                    // 1) Input box, placeholder shows the unit
+                    // 1.Input box, placeholder shows the unit
                     TextField("Enter \(habit.unit ?? "")", text: $numericInput)
                         .keyboardType(.numberPad)
                         .frame(width: 60)
                         .multilineTextAlignment(.trailing)
 
-                    //Unit label
+                    //2.Unit label
                     if let unit = habit.unit {
                         Text(unit)
                             .foregroundColor(.secondary)
                     }
 
-                    //Save button
+                    //3.Save button
                     Button("Save") {
                         if let amt = Int(numericInput) {
                             viewModel.logValue(for: habit, amount: amt)
