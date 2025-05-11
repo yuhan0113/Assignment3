@@ -63,6 +63,7 @@ struct ContentView: View {
             }
 
             // Section 2 (Other features)
+            // Test
             Section(header: Text("More")) {
                 NavigationLink(destination: CalendarView(viewModel: habitViewModel)) {Text("Calendar")}
                 NavigationLink(destination: TrackerView(viewModel: habitViewModel)) {Text("Tracker")}
