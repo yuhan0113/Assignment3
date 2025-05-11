@@ -17,7 +17,6 @@ struct HabitDetailView: View {
         ?? 0
     }
 
-
     // ==== Body ====
     var body: some View {
         Form {
@@ -38,8 +37,6 @@ struct HabitDetailView: View {
                             habit.goal = nil
                         }
                     }
-
-                    
 
                       // 2) ONLY show unit & goal for numeric habits
                       if habit.type == .numeric {
@@ -83,7 +80,7 @@ struct HabitDetailView: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+    
                     HStack {
                       Text("Goal:")
                       Spacer()
@@ -104,7 +101,6 @@ struct HabitDetailView: View {
         }
         .navigationTitle("Habit Details")
         
-        
         // ==== ToolBar ====
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -119,6 +115,12 @@ struct HabitDetailView: View {
                     Text("...")
                 }
             }
+        }
+        .sheet(isPresented: $isEditing) {
+            NewHabitView(habit: $habit, onSave: { updatedHabit in
+                onUpdate(updatedHabit)
+                isEditing = false
+            }, new: false)
         }
         .alert(isPresented: $showingDeleteConfirmation) {
             Alert(

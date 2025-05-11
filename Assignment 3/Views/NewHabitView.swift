@@ -10,19 +10,31 @@ struct NewHabitView: View {
     @State private var type: TrackingType
     @State private var unitText: String
     @State private var goalText: String
+    @State private var notify: Bool
+    @State private var notificationTime: Date
+    let new: Bool
+    @EnvironmentObject var habitViewModel: HabitViewModel
 
-    init(habit: Binding<Habit>, onSave: @escaping (Habit) -> Void) {
+    init(habit: Binding<Habit>, onSave: @escaping (Habit) -> Void, new: Bool) {
         self._habit = habit
         self.onSave = onSave
+        self.new = new
         _habitName = State(initialValue: habit.wrappedValue.name)
         _type = State(initialValue: habit.wrappedValue.type)
         _unitText = State(initialValue: habit.wrappedValue.unit ?? "")
         _goalText = State(initialValue: habit.wrappedValue.goal.map(String.init) ?? "")
+        _notify = State(initialValue: habit.wrappedValue.notify)
+        _notificationTime = State(initialValue: habit.wrappedValue.notificationTime ?? Date())
     }
+    
     var body: some View {
         NavigationView {
             Form {
                 TextField("Habit Name", text: $habitName)
+                Toggle("Notify", isOn: $notify)
+                if notify {
+                    DatePicker("Notification Time", selection: $notificationTime, displayedComponents: .hourAndMinute)
+                }
                 if type == .numeric {
                     TextField("Unit (e.g. km, ml)", text: $unitText)
                       .padding(.vertical, 4)
@@ -39,7 +51,7 @@ struct NewHabitView: View {
                   .pickerStyle(SegmentedPickerStyle())
                   .padding(.vertical)
             }
-            .navigationTitle(habit.id == UUID() ? "Add New Habit" : "Edit Habit")
+            .navigationTitle(new ? "Add New Habit" : "Edit Habit")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
@@ -49,8 +61,13 @@ struct NewHabitView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         let goalValue = Int(goalText)
-                        let savedHabit = Habit(id: habit.id, name: habitName, isCompletedToday: habit.isCompletedToday, streak: habit.streak,type: type, unit: unitText.isEmpty ? nil : unitText, goal: goalValue)
+                        let savedHabit = Habit(id: habit.id, name: habitName, isCompletedToday: habit.isCompletedToday, streak: habit.streak, notify: notify, notificationTime: notificationTime, type: type, unit: unitText.isEmpty ? nil : unitText, goal: goalValue)
                         onSave(savedHabit)
+                        habit.notify = notify;
+                        habit.notificationTime = notificationTime
+                        if notify {
+                            habitViewModel.scheduleNotification(for: savedHabit)
+                        }
                         dismiss()
                     }
                     .disabled(habitName.isEmpty)
@@ -62,7 +79,7 @@ struct NewHabitView: View {
 
 #Preview {
     @Previewable @State var dummyHabit = Habit(name: "Test Habit")
-    NewHabitView(habit: $dummyHabit) { savedHabit in
+    NewHabitView(habit: $dummyHabit, onSave: { savedHabit in
         print("Saved habit: \(savedHabit)")
-    }
+    }, new: true)
 }

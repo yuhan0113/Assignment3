@@ -11,6 +11,8 @@ class HabitViewModel: ObservableObject {
 
     init() {
         loadHabits()
+        setupDailyResetTimer()
+        scheduleAllNotifications()
         
         // added for testing remove later
         if habits.isEmpty {
@@ -30,6 +32,10 @@ class HabitViewModel: ObservableObject {
 
     func deleteHabit(at offsets: IndexSet) {
         habits.remove(atOffsets: offsets)
+        for index in offsets {
+            let habitToDelete = habits[index]
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [habitToDelete.id.uuidString])
+        }
     }
     
     func logValue(for habit: Habit, amount: Int) {
@@ -94,6 +100,77 @@ class HabitViewModel: ObservableObject {
         }
         catch {
             print("Error loading habits: \(error)")
+        }
+    }
+    
+    func requestNotificationAuthorization() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if let error = error {
+                print("Error : \(error)")
+                return
+            }
+            if granted {
+                DispatchQueue.main.async {
+                    self.scheduleAllNotifications()
+                }
+            }
+        }
+    }
+    
+    func scheduleNotification(for habit: Habit) {
+        guard habit.notify, let notificationTime = habit.notificationTime, !habit.isCompletedToday else {
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [habit.id.uuidString])
+            return
+        }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Habit Reminder"
+        content.body = "You haven't completed \(habit.name) today!"
+        content.sound = .default
+
+        let dateComponents = Calendar.current.dateComponents([.hour, .minute], from: notificationTime)
+        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+
+        let request = UNNotificationRequest(identifier: habit.id.uuidString, content: content, trigger: trigger)
+
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error scheduling notification for \(habit.name): \(error)")
+            } else {
+                print("Notification scheduled for \(habit.name) at \(notificationTime)")
+            }
+        }
+    }
+    
+    func scheduleAllNotifications() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
+                DispatchQueue.main.async {
+                    for habit in self.habits {
+                        self.scheduleNotification(for: habit)
+                    }
+                }
+            }
+        }
+    }
+    
+    func setupDailyResetTimer() {
+        let calendar = Calendar.current
+        
+        guard let nextDay = calendar.date(byAdding: .day, value: 1, to: Date()) else {
+            print("Can't calculate next day")
+            return
+        }
+        let startOfNextDay = calendar.startOfDay(for: nextDay)
+        let timeInterval = startOfNextDay.timeIntervalSinceNow
+        
+        Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+            for index in habits.indices {
+                habits[index].isCompletedToday = false
+            }
+            saveHabits()
+            self.setupDailyResetTimer()
         }
     }
 }

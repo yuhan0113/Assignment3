@@ -26,10 +26,14 @@ struct ContentView: View {
                 }
                 .sheet(isPresented: $showingNewHabitView) {
                     let newHabit = Habit(name: "")
-                    NewHabitView(habit: .constant(newHabit)) { savedHabit in
+                    NewHabitView(habit: .constant(newHabit), onSave: { savedHabit in
                         habitViewModel.addHabit(savedHabit)
-                    }
+                        showingNewHabitView = false
+                    }, new: true)
                 }
+                .onAppear {
+                    habitViewModel.requestNotificationAuthorization()
+                    }
         }
     }
     
