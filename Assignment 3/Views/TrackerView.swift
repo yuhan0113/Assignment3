@@ -6,17 +6,9 @@ struct TrackerView: View {
     var body: some View {
         NavigationView {
             List {
-                Section(header: Text("All Habits")) {
+                Section(header: Text("Log Progress")) {
                     ForEach(viewModel.habits) { habit in
-                        HStack {
-                            Text(habit.name)
-                            Spacer()
-                            Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(habit.isCompletedToday ? .green : .gray)
-                                .onTapGesture {
-                                    viewModel.toggleCompletion(habit: habit)
-                                }
-                        }
+                        HabitRowView(habit: habit, viewModel: viewModel)
                     }
                 }
             }

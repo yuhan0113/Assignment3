@@ -23,31 +23,47 @@ class HabitViewModel: ObservableObject {
         }
     }
 
-    func addHabit(name: String) {
-        let newHabit = Habit(name: name)
-        habits.append(newHabit)
+    func addHabit(_ habit: Habit) {
+      habits.append(habit)
+      saveHabits()
     }
 
     func deleteHabit(at offsets: IndexSet) {
         habits.remove(atOffsets: offsets)
     }
+    
+    func logValue(for habit: Habit, amount: Int) {
+        let today = Calendar.current.startOfDay(for: Date())
+        let meetsGoal = (amount >= (habit.goal ?? Int.max)) // Compare input with goal
+
+        // Record the log
+        let entry = HabitLog(
+            date: today,
+            value: amount,
+            habitID: habit.id,
+            completed: meetsGoal
+        )
+        logs[habit.id, default: []].append(entry)
+
+        // Only tick today if user meet the goal
+        if let idx = habits.firstIndex(where: { $0.id == habit.id }) {
+            habits[idx].isCompletedToday = meetsGoal
+        }
+    }
 
     func toggleCompletion(habit: Habit) {
-        // 1. Find the habit in the array
         guard let idx = habits.firstIndex(where: { $0.id == habit.id }) else { return }
         
-        // 2. Flip the "completed today" flag
         let didNowComplete = !habits[idx].isCompletedToday
         habits[idx].isCompletedToday = didNowComplete
         
-        // 3. Record (or remove) a log entry for *today* in the logs dict
         let today = Calendar.current.startOfDay(for: Date())
         if didNowComplete {
             // Add a log if we're now marking it complete
-            let newLog = HabitLog(date: today, value: nil)
+            let newLog = HabitLog(date: today, value: nil, habitID: habit.id, completed: true)
             logs[habit.id, default: []].append(newLog)
         } else {
-            // Remove any log dated today if we're un-marking it
+            // Remove any log dated today if we are un-marking it
             logs[habit.id] = logs[habit.id]?.filter {
                 !Calendar.current.isDate($0.date, inSameDayAs: today)
             }

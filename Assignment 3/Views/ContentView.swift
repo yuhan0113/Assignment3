@@ -27,7 +27,7 @@ struct ContentView: View {
                 .sheet(isPresented: $showingNewHabitView) {
                     let newHabit = Habit(name: "")
                     NewHabitView(habit: .constant(newHabit)) { savedHabit in
-                        habitViewModel.addHabit(name: savedHabit.name)
+                        habitViewModel.addHabit(savedHabit)
                     }
                 }
         }
@@ -40,25 +40,13 @@ struct ContentView: View {
             Section(header: Text("Today's Habits")) {
                 ForEach(habitViewModel.habits) { habit in
                     NavigationLink(
-                        destination: HabitDetailView(
-                            habit: habit,
-                            onUpdate: { updatedHabit in
-                                //original habit
-                                guard let idx = habitViewModel.habits.firstIndex(where: { $0.id == updatedHabit.id }) else { return }
-                                let old = habitViewModel.habits[idx]
-
-                                // if completion toggled, record or un-record a log
-                                if updatedHabit.isCompletedToday != old.isCompletedToday {
-                                    habitViewModel.toggleCompletion(habit: old)
-                                }
-
-                                // if name changed, update it
-                                if updatedHabit.name != old.name {
-                                    habitViewModel.habits[idx].name = updatedHabit.name
-                                }
-                            }
-
-                        )
+                      destination: HabitDetailView(
+                        habit: habit,
+                        onUpdate: { updatedHabit in
+                            guard let idx = habitViewModel.habits.firstIndex(where: { $0.id == updatedHabit.id }) else { return }
+                            habitViewModel.habits[idx] = updatedHabit
+                        }
+                      )
                     ) {
                         HStack {
                             Text(habit.name)
