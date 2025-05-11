@@ -66,9 +66,7 @@ struct ContentView: View {
             Section(header: Text("More")) {
                 NavigationLink(destination: CalendarView(viewModel: habitViewModel)) {Text("Calendar")}
                 NavigationLink(destination: TrackerView(viewModel: habitViewModel)) {Text("Tracker")}
-                NavigationLink(destination: SettingsView().environmentObject(userSettings)) {
-                    Text("Settings")
-                }
+                NavigationLink(destination: SettingsView(userSettings: userSettings)) {Text("Settings")}
             }
         }
     }

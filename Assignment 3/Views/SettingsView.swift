@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var userSettings: UserSettings
+    @ObservedObject var userSettings: UserSettings
 
     var body: some View {
         Form {
@@ -41,6 +41,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
-        .environmentObject(UserSettings())
+    SettingsView(userSettings: UserSettings())
 }
