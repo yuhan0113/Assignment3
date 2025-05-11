@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var habitViewModel = HabitViewModel()
+    @EnvironmentObject var userSettings: UserSettings
     @State private var showingNewHabitView = false
 
     // ==== Body ====
@@ -77,7 +78,9 @@ struct ContentView: View {
             Section(header: Text("More")) {
                 NavigationLink(destination: CalendarView(viewModel: habitViewModel)) {Text("Calendar")}
                 NavigationLink(destination: TrackerView(viewModel: habitViewModel)) {Text("Tracker")}
-                NavigationLink("Settings", destination: SettingsView())
+                NavigationLink(destination: SettingsView().environmentObject(userSettings)) {
+                    Text("Settings")
+                }
             }
         }
     }
@@ -85,4 +88,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(UserSettings())
 }

@@ -76,10 +76,10 @@ struct HabitDetailView: View {
 }
 
 #Preview {
-    let viewModel = HabitViewModel()
-    return HabitDetailView(
+    HabitDetailView(
         habit: Habit(name: "Read Book", isCompletedToday: false, streak: 5)
     ) { updatedHabit in
         print("Updated Habit: \(updatedHabit)")
     }
+    .environmentObject(HabitViewModel())
 }
