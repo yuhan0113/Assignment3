@@ -7,8 +7,8 @@ https://github.com/yuhan0113/Assignment3
 
 ## 🧠 Features
 
-- ✅ Add and customise habits (either boolean or numeric)
-- ✏️ Edit habits inline with goal setting and unit (e.g. “3 km”, “5 cups”)
+- ✅ Add and customise habits (either boolean [yes/no] or numeric [measurable])
+- ✏️ Edit habits inline with goal setting and unit (e.g. “3 km of running”, “5 pints of beer”)
 - 📆 View habit completion across days in a calendar
 - 🔔 Enable daily reminders with time selection
 - 📈 Log numeric values directly in a tracker view
@@ -35,7 +35,7 @@ https://github.com/yuhan0113/Assignment3
 
 ---
 
-## 🧪 Technologies Used
+## 🧪 Technology We Used
 
 - **SwiftUI** (iOS 17+)
 - **MVVM-lite** design pattern
