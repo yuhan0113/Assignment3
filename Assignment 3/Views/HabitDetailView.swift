@@ -21,82 +21,43 @@ struct HabitDetailView: View {
     var body: some View {
         Form {
             Group {
-                // ==== Habit Editing Mode ====
-                if isEditing {
-                    // 1) name & type always editable
-                      TextField("Habit Name", text: $habit.name)
-
-                    Picker("Type", selection: $habit.type) {
-                      Text("Yes/No").tag(TrackingType.boolean)
-                      Text("Numeric").tag(TrackingType.numeric)
+                    // ==== Habit Viewing Mode ====
+                HStack {
+                    Text("Habit:")
+                    Spacer()
+                    Text(habit.name)
+                }
+                
+                HStack {
+                    Text("Streak:")
+                    Spacer()
+                    Text("\(habit.streak) days")
+                }
+                    
+                if habit.type == .numeric {
+                    HStack {
+                        Text("Milestone:")
+                        Spacer()
+                        Text("\(todayLogged)/\(habit.goal ?? 0) \(habit.unit ?? "")")
+                            .foregroundColor(.secondary)
                     }
-                    .pickerStyle(.segmented)
-                    .onChange(of: habit.type) { newType in
-                        if newType == .boolean {
-                            habit.unit = nil
-                            habit.goal = nil
-                        }
+                }
+    
+                HStack {
+                    Text("Goal:")
+                    Spacer()
+                    if let goal = habit.goal, let unit = habit.unit, !unit.isEmpty {
+                        Text("\(goal) \(unit)")
+                    } else {
+                        Text("—")
+                        .foregroundColor(.secondary)
                     }
-
-                      // 2) ONLY show unit & goal for numeric habits
-                      if habit.type == .numeric {
-                        TextField("Unit (e.g. km, ml)", text: Binding(
-                          get: { habit.unit ?? "" },
-                          set: { habit.unit = $0 }
-                        ))
-                        .padding(.vertical, 4)
-
-                        TextField("Goal", value: Binding(
-                          get: { habit.goal ?? 0 },
-                          set: { habit.goal = $0 }
-                        ), format: .number)
-                        .keyboardType(.numberPad)
-                        .padding(.vertical, 4)
-                      }
-
-                    Button("Save Changes") {
-                        isEditing = false
+                }
+                    
+                Toggle("Completed Today", isOn: $habit.isCompletedToday)
+                    .onChange(of: habit.isCompletedToday) {
                         onUpdate(habit)
                     }
-                    // ==== Habit Viewing Mode ====
-                } else {
-                    HStack {
-                        Text("Habit:")
-                        Spacer()
-                        Text(habit.name)
-                    }
-                    
-                    HStack {
-                        Text("Streak:")
-                        Spacer()
-                        Text("\(habit.streak) days")
-                    }
-                    
-                    if habit.type == .numeric {
-                        HStack {
-                            Text("Milestone:")
-                            Spacer()
-                            Text("\(todayLogged)/\(habit.goal ?? 0) \(habit.unit ?? "")")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-    
-                    HStack {
-                      Text("Goal:")
-                      Spacer()
-                      if let goal = habit.goal, let unit = habit.unit, !unit.isEmpty {
-                        Text("\(goal) \(unit)")
-                      } else {
-                        Text("—")
-                          .foregroundColor(.secondary)
-                      }
-                    }
-                    
-                    Toggle("Completed Today", isOn: $habit.isCompletedToday)
-                        .onChange(of: habit.isCompletedToday) {
-                            onUpdate(habit)
-                        }
-                }
             }
         }
         .navigationTitle("Habit Details")

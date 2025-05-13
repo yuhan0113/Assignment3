@@ -1,7 +1,5 @@
 import SwiftUI
 
-// RENAME THE VIEW AFTER EVERYTHING IS DONE
-
 struct NewHabitView: View {
     @Binding var habit: Habit
     let onSave: (Habit) -> Void

@@ -13,16 +13,6 @@ class HabitViewModel: ObservableObject {
         loadHabits()
         setupDailyResetTimer()
         scheduleAllNotifications()
-        
-        // added for testing remove later
-        if habits.isEmpty {
-            habits = [
-                Habit(name: "Test1"),
-                Habit(name: "Test2"),
-                Habit(name: "Test3")
-            ]
-            saveHabits()
-        }
     }
 
     func addHabit(_ habit: Habit) {
